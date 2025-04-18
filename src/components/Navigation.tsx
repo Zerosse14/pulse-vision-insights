@@ -7,11 +7,13 @@ import {
   NavigationMenuList,
   navigationMenuTriggerStyle,
 } from "@/components/ui/navigation-menu";
+import { Button } from "@/components/ui/button";
+import { UserCircle } from "lucide-react";
 
 const Navigation = () => {
   return (
     <nav className="border-b border-white/10 bg-black/20 backdrop-blur-xl">
-      <div className="container mx-auto px-4">
+      <div className="container mx-auto px-4 flex justify-between items-center">
         <NavigationMenu className="py-4">
           <NavigationMenuList>
             <NavigationMenuItem>
@@ -36,6 +38,14 @@ const Navigation = () => {
             </NavigationMenuItem>
           </NavigationMenuList>
         </NavigationMenu>
+        <div>
+          <Button variant="outline" size="sm" className="gap-2" asChild>
+            <Link to="/login">
+              <UserCircle size={18} />
+              Login
+            </Link>
+          </Button>
+        </div>
       </div>
     </nav>
   );
