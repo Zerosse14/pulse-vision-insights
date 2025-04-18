@@ -15,35 +15,39 @@ import DashboardLayout from "./layouts/DashboardLayout";
 import DashboardHome from "./pages/dashboard/DashboardHome";
 import ColorAnalysisDashboard from "./pages/dashboard/ColorAnalysisDashboard";
 
+// Create QueryClient outside of the component
 const queryClient = new QueryClient();
 
-const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <BrowserRouter>
-        <Routes>
-          {/* Public routes with navigation */}
-          <Route path="/" element={<><Navigation /><Index /></>} />
-          <Route path="/color-analysis" element={<><Navigation /><ColorAnalysis /></>} />
-          <Route path="/transcript-analysis" element={<><Navigation /><TranscriptAnalysis /></>} />
-          <Route path="/trend-analysis" element={<><Navigation /><TrendAnalysis /></>} />
-          <Route path="/login" element={<><Navigation /><Login /></>} />
-          
-          {/* Dashboard routes */}
-          <Route path="/dashboard" element={<DashboardLayout />}>
-            <Route index element={<DashboardHome />} />
-            <Route path="color" element={<ColorAnalysisDashboard />} />
-            {/* More dashboard routes will be added as needed */}
+// Wrap everything in a proper function component
+function App() {
+  return (
+    <QueryClientProvider client={queryClient}>
+      <TooltipProvider>
+        <Toaster />
+        <Sonner />
+        <BrowserRouter>
+          <Routes>
+            {/* Public routes with navigation */}
+            <Route path="/" element={<><Navigation /><Index /></>} />
+            <Route path="/color-analysis" element={<><Navigation /><ColorAnalysis /></>} />
+            <Route path="/transcript-analysis" element={<><Navigation /><TranscriptAnalysis /></>} />
+            <Route path="/trend-analysis" element={<><Navigation /><TrendAnalysis /></>} />
+            <Route path="/login" element={<><Navigation /><Login /></>} />
+            
+            {/* Dashboard routes */}
+            <Route path="/dashboard" element={<DashboardLayout />}>
+              <Route index element={<DashboardHome />} />
+              <Route path="color" element={<ColorAnalysisDashboard />} />
+              {/* More dashboard routes will be added as needed */}
+              <Route path="*" element={<NotFound />} />
+            </Route>
+            
             <Route path="*" element={<NotFound />} />
-          </Route>
-          
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </BrowserRouter>
-    </TooltipProvider>
-  </QueryClientProvider>
-);
+          </Routes>
+        </BrowserRouter>
+      </TooltipProvider>
+    </QueryClientProvider>
+  );
+}
 
 export default App;
