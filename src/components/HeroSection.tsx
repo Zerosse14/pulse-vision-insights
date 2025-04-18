@@ -1,4 +1,5 @@
 
+import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 
 const HeroSection = () => {
@@ -17,11 +18,11 @@ const HeroSection = () => {
           and trending recommendations all in one place.
         </p>
         <div className="flex gap-4 justify-center">
-          <Button size="lg" className="bg-primary hover:bg-primary/90">
-            Get Started
+          <Button size="lg" className="bg-primary hover:bg-primary/90" asChild>
+            <Link to="/color-analysis">Get Started</Link>
           </Button>
-          <Button size="lg" variant="outline">
-            Watch Demo
+          <Button size="lg" variant="outline" asChild>
+            <Link to="/trend-analysis">View Trends</Link>
           </Button>
         </div>
       </div>
