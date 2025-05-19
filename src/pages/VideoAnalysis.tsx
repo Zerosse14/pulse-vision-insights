@@ -1,116 +1,67 @@
 
-import React, { useState } from 'react';
+import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import VideoUpload from "@/components/VideoUpload";
-import ColorAnalysisResults from "@/components/ColorAnalysisResults";
-import TranscriptResults from "@/components/TranscriptResults";
-import { toast } from "@/components/ui/use-toast";
-import { analyzeVideoColors } from "@/utils/colorAnalysis";
-import { extractTranscript } from "@/utils/transcriptExtraction";
-import { ColorData } from "@/types/colorAnalysis";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Button } from "@/components/ui/button";
+import { useNavigate } from 'react-router-dom';
+import { ArrowRight, FileText, PaletteIcon } from 'lucide-react';
 
 const VideoAnalysis = () => {
-  const [isAnalyzing, setIsAnalyzing] = useState(false);
-  const [colorData, setColorData] = useState<ColorData | null>(null);
-  const [transcriptData, setTranscriptData] = useState<string | null>(null);
-  const [showResults, setShowResults] = useState(false);
-  const [activeTab, setActiveTab] = useState<string>("colors");
+  const navigate = useNavigate();
 
-  const handleVideoUpload = async (file: File) => {
-    try {
-      setIsAnalyzing(true);
-      setShowResults(false); // Reset results view while processing
-      
-      toast({
-        title: "Processing video",
-        description: "Analyzing color patterns and extracting transcript...",
-      });
-      
-      // Process the video for color analysis
-      const colorResults = await analyzeVideoColors(file);
-      setColorData(colorResults);
-      
-      // Extract transcript from the video
-      const transcript = await extractTranscript(file);
-      setTranscriptData(transcript);
-      
-      setShowResults(true); // Show results once analysis is complete
-      
-      toast({
-        title: "Analysis complete",
-        description: "Your video has been analyzed successfully!",
-      });
-    } catch (error) {
-      console.error("Error analyzing video:", error);
-      toast({
-        title: "Analysis failed",
-        description: "There was an error processing your video.",
-        variant: "destructive",
-      });
-    } finally {
-      setIsAnalyzing(false);
-    }
+  const handleGoToColorDashboard = () => {
+    navigate('/dashboard/color');
+  };
+  
+  const handleGoToTranscriptDashboard = () => {
+    navigate('/dashboard/transcript');
   };
 
   return (
     <div className="container mx-auto py-10 px-4">
       <h1 className="text-4xl font-bold mb-8">
-        <span className="gradient-text">Video Color Analysis</span>
+        <span className="gradient-text">Video Analysis</span>
       </h1>
       
-      <div className="grid gap-6 md:grid-cols-1">
-        {!showResults ? (
-          <Card className="bg-black/20 border-white/10">
-            <CardHeader>
-              <CardTitle>Upload Video</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <VideoUpload onUpload={handleVideoUpload} isUploading={isAnalyzing} />
-            </CardContent>
-          </Card>
-        ) : (
-          <>
-            <div className="flex justify-between items-center mb-4">
-              <h2 className="text-2xl font-semibold">Analysis Results</h2>
-              <button 
-                onClick={() => setShowResults(false)} 
-                className="px-4 py-2 bg-black/30 hover:bg-black/50 rounded-md text-white transition-colors"
-              >
-                Analyze Another Video
-              </button>
-            </div>
+      <div className="grid gap-6 md:grid-cols-2">
+        <Card className="bg-black/20 border-white/10">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <PaletteIcon className="h-5 w-5" />
+              Color Analysis
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-gray-400 mb-6">
+              Analyze the color patterns, palette, and visual mood of your videos 
+              to optimize engagement and emotional impact.
+            </p>
             
-            <Tabs value={activeTab} onValueChange={setActiveTab}>
-              <TabsList className="mb-4">
-                <TabsTrigger value="colors">Color Analysis</TabsTrigger>
-                <TabsTrigger value="transcript">Transcript</TabsTrigger>
-              </TabsList>
-              
-              <TabsContent value="colors">
-                <Card className="bg-black/20 border-white/10">
-                  <CardHeader>
-                    <CardTitle>Color Analysis Results</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    {colorData && <ColorAnalysisResults data={colorData} />}
-                  </CardContent>
-                </Card>
-              </TabsContent>
-              
-              <TabsContent value="transcript">
-                <Card className="bg-black/20 border-white/10">
-                  <CardHeader>
-                    <CardTitle>Transcript Analysis</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    {transcriptData && <TranscriptResults transcript={transcriptData} />}
-                  </CardContent>
-                </Card>
-              </TabsContent>
-            </Tabs>
-          </>
-        )}
+            <Button onClick={handleGoToColorDashboard} className="w-full">
+              Try Color Analysis
+              <ArrowRight className="ml-2 h-4 w-4" />
+            </Button>
+          </CardContent>
+        </Card>
+        
+        <Card className="bg-black/20 border-white/10">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <FileText className="h-5 w-5" />
+              Transcript Analysis
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-gray-400 mb-6">
+              Extract and analyze the spoken content of your videos to gain insights
+              into messaging, keywords, and engagement potential.
+            </p>
+            
+            <Button onClick={handleGoToTranscriptDashboard} className="w-full">
+              Try Transcript Analysis
+              <ArrowRight className="ml-2 h-4 w-4" />
+            </Button>
+          </CardContent>
+        </Card>
       </div>
     </div>
   );
