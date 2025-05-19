@@ -11,3 +11,13 @@ export interface ColorData {
   mood: string;
   timeline: { frame: number; color: string }[];
 }
+
+export interface TranscriptData {
+  text: string;
+  confidence?: number;
+  segments?: {
+    start: number;
+    end: number;
+    text: string;
+  }[];
+}
