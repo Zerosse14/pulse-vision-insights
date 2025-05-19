@@ -10,10 +10,13 @@ import { ColorData } from "@/types/colorAnalysis";
 const VideoAnalysis = () => {
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [colorData, setColorData] = useState<ColorData | null>(null);
+  const [showResults, setShowResults] = useState(false);
 
   const handleVideoUpload = async (file: File) => {
     try {
       setIsAnalyzing(true);
+      setShowResults(false); // Reset results view while processing
+      
       toast({
         title: "Processing video",
         description: "Analyzing color patterns in your video...",
@@ -22,6 +25,7 @@ const VideoAnalysis = () => {
       // Process the video and analyze colors
       const results = await analyzeVideoColors(file);
       setColorData(results);
+      setShowResults(true); // Show results once analysis is complete
       
       toast({
         title: "Analysis complete",
@@ -45,25 +49,37 @@ const VideoAnalysis = () => {
         <span className="gradient-text">Video Color Analysis</span>
       </h1>
       
-      <div className="grid gap-6 md:grid-cols-1 lg:grid-cols-2">
-        <Card className="bg-black/20 border-white/10">
-          <CardHeader>
-            <CardTitle>Upload Video</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <VideoUpload onUpload={handleVideoUpload} isUploading={isAnalyzing} />
-          </CardContent>
-        </Card>
-        
-        {colorData && (
+      <div className="grid gap-6 md:grid-cols-1">
+        {!showResults ? (
           <Card className="bg-black/20 border-white/10">
             <CardHeader>
-              <CardTitle>Color Analysis Results</CardTitle>
+              <CardTitle>Upload Video</CardTitle>
             </CardHeader>
             <CardContent>
-              <ColorAnalysisResults data={colorData} />
+              <VideoUpload onUpload={handleVideoUpload} isUploading={isAnalyzing} />
             </CardContent>
           </Card>
+        ) : (
+          <>
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-2xl font-semibold">Analysis Results</h2>
+              <button 
+                onClick={() => setShowResults(false)} 
+                className="px-4 py-2 bg-black/30 hover:bg-black/50 rounded-md text-white transition-colors"
+              >
+                Analyze Another Video
+              </button>
+            </div>
+            
+            <Card className="bg-black/20 border-white/10">
+              <CardHeader>
+                <CardTitle>Color Analysis Results</CardTitle>
+              </CardHeader>
+              <CardContent>
+                {colorData && <ColorAnalysisResults data={colorData} />}
+              </CardContent>
+            </Card>
+          </>
         )}
       </div>
     </div>
