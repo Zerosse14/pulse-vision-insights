@@ -10,6 +10,10 @@ const TranscriptAnalysis = () => {
   const handleGoToVideoAnalysis = () => {
     navigate('/video-analysis');
   };
+  
+  const handleGoToDashboard = () => {
+    navigate('/dashboard/transcript');
+  };
 
   return (
     <div className="container mx-auto py-10 px-4">
@@ -26,9 +30,12 @@ const TranscriptAnalysis = () => {
             Get content suggestions, topic analysis, and more from your video audio.
           </p>
           
-          <div className="flex justify-center">
-            <Button onClick={handleGoToVideoAnalysis} size="lg">
+          <div className="flex justify-center gap-4">
+            <Button onClick={handleGoToVideoAnalysis} variant="outline" size="lg">
               Go to Video Analysis
+            </Button>
+            <Button onClick={handleGoToDashboard} size="lg">
+              Try in Dashboard
             </Button>
           </div>
         </CardContent>

@@ -16,6 +16,7 @@ import Login from "./pages/Login";
 import DashboardLayout from "./layouts/DashboardLayout";
 import DashboardHome from "./pages/dashboard/DashboardHome";
 import ColorAnalysisDashboard from "./pages/dashboard/ColorAnalysisDashboard";
+import TranscriptAnalysisDashboard from "./pages/dashboard/TranscriptAnalysisDashboard";
 
 // Create QueryClient outside of the component
 const queryClient = new QueryClient();
@@ -41,6 +42,7 @@ function App() {
               <Route path="/dashboard" element={<DashboardLayout />}>
                 <Route index element={<DashboardHome />} />
                 <Route path="color" element={<ColorAnalysisDashboard />} />
+                <Route path="transcript" element={<TranscriptAnalysisDashboard />} />
                 {/* More dashboard routes will be added as needed */}
                 <Route path="*" element={<NotFound />} />
               </Route>

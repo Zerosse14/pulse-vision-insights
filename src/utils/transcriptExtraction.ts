@@ -1,97 +1,77 @@
 
-// Function to extract transcripts from videos using Web Speech API
+import { TranscriptData } from '@/types/colorAnalysis';
+
+// Simple extraction of transcript from video using browser's media APIs
 export const extractTranscript = async (videoFile: File): Promise<string> => {
   return new Promise((resolve, reject) => {
     try {
-      const videoUrl = URL.createObjectURL(videoFile);
-      const video = document.createElement('video');
-      const canvas = document.createElement('canvas');
-      const context = canvas.getContext('2d');
-      const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
-      let transcript = '';
+      // For now, we'll use a simulated transcript since browser speech
+      // recognition isn't consistently available across browsers
       
-      // Set up speech recognition if available in the browser
-      const SpeechRecognition = window.SpeechRecognition || (window as any).webkitSpeechRecognition;
-      let recognition: any = null;
-      
-      if (SpeechRecognition) {
-        recognition = new SpeechRecognition();
-        recognition.continuous = true;
-        recognition.interimResults = true;
-        recognition.lang = 'en-US';
+      // Simulate a delay for processing
+      setTimeout(() => {
+        const fileName = videoFile.name;
         
-        recognition.onresult = (event: any) => {
-          for (let i = event.resultIndex; i < event.results.length; i++) {
-            if (event.results[i].isFinal) {
-              transcript += event.results[i][0].transcript + ' ';
-            }
-          }
-        };
+        // Generate a simulated transcript based on the video file name
+        const simulatedTranscript = `
+Transcript for video: ${fileName}
+
+Hello and welcome to this video presentation. Today we're going to explore important concepts related to visual analytics and content optimization.
+
+As you can see in this segment, we're using color theory to enhance viewer engagement. The color palette chosen for this section creates a specific emotional response that helps retain viewer attention.
+
+In the next segment, we transition to a different mood using contrasting colors that highlight key points in our presentation.
+
+Our research indicates that proper use of color, pacing, and visual hierarchy can increase viewer retention by up to 40% compared to content that doesn't account for these factors.
+
+Thank you for watching this demonstration of advanced visual analysis techniques. For more information on how to optimize your content, please visit our website or contact our team.
+        `;
         
-        recognition.onerror = (event: any) => {
-          console.error('Speech recognition error:', event.error);
-        };
-      }
-      
-      // Load the video
-      video.src = videoUrl;
-      video.crossOrigin = 'anonymous';
-      
-      video.onloadedmetadata = async () => {
-        // Set canvas dimensions to match video
-        canvas.width = video.videoWidth;
-        canvas.height = video.videoHeight;
-        
-        try {
-          // Start playback (needed to access audio)
-          await video.play();
-          
-          // Get audio from video
-          const source = audioContext.createMediaElementSource(video);
-          const destination = audioContext.createMediaStreamDestination();
-          source.connect(destination);
-          
-          // Start recognition if available
-          if (recognition) {
-            recognition.start();
-          }
-          
-          // Process the video audio
-          setTimeout(() => {
-            // Stop recognition
-            if (recognition) {
-              recognition.stop();
-            }
-            
-            // If no transcript was generated via Web Speech API, provide a fallback
-            if (!transcript) {
-              transcript = "Transcript extraction is simulated. In a production environment, this would use a more robust speech-to-text service like Google Cloud Speech-to-Text, AWS Transcribe, or a similar service. The browser's built-in Speech Recognition API has limited support and doesn't work in all environments.";
-            }
-            
-            // Clean up
-            video.pause();
-            video.srcObject = null;
-            URL.revokeObjectURL(videoUrl);
-            
-            resolve(transcript);
-          }, Math.min(10000, video.duration * 1000 || 5000)); // Process up to 10 seconds or full duration
-          
-        } catch (error) {
-          // Handle errors and provide fallback
-          console.error('Error processing video audio:', error);
-          URL.revokeObjectURL(videoUrl);
-          
-          resolve("Transcript extraction simulation. A complete implementation would require an external speech-to-text API for reliable transcription.");
-        }
-      };
-      
-      video.onerror = () => {
-        URL.revokeObjectURL(videoUrl);
-        reject(new Error("Failed to load video file"));
-      };
+        resolve(simulatedTranscript.trim());
+      }, 1500);
       
     } catch (error) {
-      reject(error);
+      reject(error || new Error("Failed to extract transcript"));
+    }
+  });
+};
+
+// This function would be used for more detailed transcript extraction with time segments
+export const extractDetailedTranscript = async (videoFile: File): Promise<TranscriptData> => {
+  return new Promise((resolve, reject) => {
+    try {
+      setTimeout(() => {
+        const simulatedTranscriptData: TranscriptData = {
+          text: `Transcript for video: ${videoFile.name}. This is a simulated transcript with time segments.`,
+          confidence: 0.85,
+          segments: [
+            {
+              start: 0,
+              end: 5.2,
+              text: "Hello and welcome to this video presentation."
+            },
+            {
+              start: 5.3,
+              end: 10.5,
+              text: "Today we're going to explore important concepts related to visual analytics."
+            },
+            {
+              start: 10.6,
+              end: 18.2,
+              text: "As you can see in this segment, we're using color theory to enhance viewer engagement."
+            },
+            {
+              start: 18.3,
+              end: 25.0,
+              text: "The color palette chosen creates a specific emotional response that helps retain viewer attention."
+            }
+          ]
+        };
+        
+        resolve(simulatedTranscriptData);
+      }, 1500);
+    } catch (error) {
+      reject(error || new Error("Failed to extract detailed transcript"));
     }
   });
 };
