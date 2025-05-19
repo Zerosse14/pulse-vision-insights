@@ -10,6 +10,7 @@ import Index from "./pages/Index";
 import ColorAnalysis from "./pages/ColorAnalysis";
 import TranscriptAnalysis from "./pages/TranscriptAnalysis";
 import TrendAnalysis from "./pages/TrendAnalysis";
+import VideoAnalysis from "./pages/VideoAnalysis";
 import NotFound from "./pages/NotFound";
 import Login from "./pages/Login";
 import DashboardLayout from "./layouts/DashboardLayout";
@@ -33,6 +34,7 @@ function App() {
               <Route path="/color-analysis" element={<><Navigation /><ColorAnalysis /></>} />
               <Route path="/transcript-analysis" element={<><Navigation /><TranscriptAnalysis /></>} />
               <Route path="/trend-analysis" element={<><Navigation /><TrendAnalysis /></>} />
+              <Route path="/video-analysis" element={<><Navigation /><VideoAnalysis /></>} />
               <Route path="/login" element={<><Navigation /><Login /></>} />
               
               {/* Dashboard routes */}

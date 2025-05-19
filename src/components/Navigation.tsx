@@ -27,6 +27,11 @@ const Navigation = () => {
               </Link>
             </NavigationMenuItem>
             <NavigationMenuItem>
+              <Link to="/video-analysis" className={navigationMenuTriggerStyle()}>
+                Video Analysis
+              </Link>
+            </NavigationMenuItem>
+            <NavigationMenuItem>
               <Link to="/transcript-analysis" className={navigationMenuTriggerStyle()}>
                 Transcript Analysis
               </Link>
