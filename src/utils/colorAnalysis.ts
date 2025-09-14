@@ -175,7 +175,14 @@ const analyzeFrames = (frames: ImageData[]): ColorData => {
   };
 };
 
-export const analyzeVideoColors = async (videoFile: File): Promise<ColorData> => {
+// ML Models for color analysis
+export const colorAnalysisModels = {
+  basic: "Basic Color Detection",
+  advanced: "CNN Color Classifier",
+  emotion: "Emotion-based Color Analysis"
+};
+
+export const analyzeVideoColors = async (videoFile: File, model: string = "basic"): Promise<ColorData> => {
   return new Promise((resolve, reject) => {
     try {
       const videoUrl = URL.createObjectURL(videoFile);
