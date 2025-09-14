@@ -5,7 +5,8 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "@/components/ui/use-toast";
-import { Instagram, Heart, MessageCircle, Send, Camera, Video } from "lucide-react";
+import { Instagram, Heart, MessageCircle, Send, Camera, Video, ExternalLink, BarChart3, Share } from "lucide-react";
+import { SocialMediaAnalyzer } from "@/utils/socialMediaAnalysis";
 
 const instagramData = {
   profile: {
@@ -28,6 +29,9 @@ const instagramData = {
 const InstagramDashboard = () => {
   const [newPost, setNewPost] = useState("");
   const [hashtags, setHashtags] = useState("#contentcreator #videoanalysis #AI");
+  const [postUrl, setPostUrl] = useState("");
+  const [analyzedPost, setAnalyzedPost] = useState<any>(null);
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
 
   const handlePost = () => {
     if (!newPost.trim()) return;
@@ -44,6 +48,33 @@ const InstagramDashboard = () => {
       title: "Story posted!",
       description: "Your Instagram story has been published successfully.",
     });
+  };
+
+  const analyzePost = async () => {
+    if (!postUrl.trim()) return;
+    
+    setIsAnalyzing(true);
+    try {
+      const result = await SocialMediaAnalyzer.analyzePost(postUrl);
+      
+      if (result) {
+        setAnalyzedPost(result);
+        toast({
+          title: "Post analyzed!",
+          description: "Successfully analyzed post data and extracted metrics.",
+        });
+      } else {
+        throw new Error("Failed to analyze post");
+      }
+    } catch (error) {
+      toast({
+        title: "Analysis failed",
+        description: "Could not analyze post data. Please check the URL.",
+        variant: "destructive"
+      });
+    } finally {
+      setIsAnalyzing(false);
+    }
   };
 
   return (
@@ -122,6 +153,56 @@ const InstagramDashboard = () => {
               Post
             </Button>
           </div>
+        </CardContent>
+      </Card>
+
+      {/* Post Analysis */}
+      <Card className="bg-black/20 border-white/10 mb-6">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <BarChart3 className="h-5 w-5" />
+            Analyze Social Media Post
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="flex gap-2">
+            <Input 
+              placeholder="Paste Instagram/Twitter post URL..."
+              value={postUrl}
+              onChange={(e) => setPostUrl(e.target.value)}
+              className="flex-1"
+            />
+            <Button onClick={analyzePost} disabled={isAnalyzing}>
+              <ExternalLink className="h-4 w-4 mr-2" />
+              {isAnalyzing ? "Analyzing..." : "Analyze"}
+            </Button>
+          </div>
+          
+          {analyzedPost && (
+            <div className="p-4 bg-black/30 rounded-lg border border-white/5">
+              <div className="flex items-center justify-between mb-3">
+                <Badge variant="secondary">{analyzedPost.platform}</Badge>
+                <span className="text-xs text-gray-400">
+                  {new Date(analyzedPost.timestamp).toLocaleString()}
+                </span>
+              </div>
+              <p className="text-sm mb-3 text-gray-300">{analyzedPost.content}</p>
+              <div className="flex items-center gap-4 text-sm">
+                <span className="flex items-center gap-1 text-red-400">
+                  <Heart className="h-4 w-4" />
+                  {analyzedPost.metrics.likes}
+                </span>
+                <span className="flex items-center gap-1 text-green-400">
+                  <Share className="h-4 w-4" />
+                  {analyzedPost.metrics.shares}
+                </span>
+                <span className="flex items-center gap-1 text-blue-400">
+                  <MessageCircle className="h-4 w-4" />
+                  {analyzedPost.metrics.comments}
+                </span>
+              </div>
+            </div>
+          )}
         </CardContent>
       </Card>
 
