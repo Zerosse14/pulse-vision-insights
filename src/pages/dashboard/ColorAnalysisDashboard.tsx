@@ -8,13 +8,16 @@ import { toast } from "@/components/ui/use-toast";
 import { analyzeVideoColors, colorAnalysisModels } from "@/utils/colorAnalysis";
 import { ColorData } from "@/types/colorAnalysis";
 import ColorAnalysisResults from "@/components/ColorAnalysisResults";
-import { Brain } from "lucide-react";
+import GenreRecommendations from "@/components/GenreRecommendations";
+import { videoGenres, getGenreRecommendation } from "@/utils/genreRecommendations";
+import { Brain, Video, Sparkles } from "lucide-react";
 
 const ColorAnalysisDashboard = () => {
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [colorData, setColorData] = useState<ColorData | null>(null);
   const [showResults, setShowResults] = useState(false);
   const [selectedModel, setSelectedModel] = useState("basic");
+  const [selectedGenre, setSelectedGenre] = useState<string>("");
 
   const handleVideoUpload = async (file: File) => {
     try {
@@ -56,12 +59,49 @@ const ColorAnalysisDashboard = () => {
       
       {!showResults ? (
         <>
+          {/* Genre Selection */}
+          <Card className="bg-black/20 border-white/10 mb-6">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Video className="h-5 w-5" />
+                Select Video Genre
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="flex gap-4 items-center">
+                <Select value={selectedGenre} onValueChange={setSelectedGenre}>
+                  <SelectTrigger className="w-64">
+                    <SelectValue placeholder="Select Video Genre" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {Object.entries(videoGenres).map(([key, value]) => (
+                      <SelectItem key={key} value={key}>{value}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <span className="text-sm text-gray-400">
+                  {selectedGenre ? `Selected: ${videoGenres[selectedGenre as keyof typeof videoGenres]}` : "Choose a genre for personalized recommendations"}
+                </span>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Genre Recommendations */}
+          {selectedGenre && (
+            <div className="mb-6">
+              <GenreRecommendations 
+                recommendation={getGenreRecommendation(selectedGenre)} 
+                selectedGenre={videoGenres[selectedGenre as keyof typeof videoGenres]}
+              />
+            </div>
+          )}
+
           {/* ML Model Selection */}
           <Card className="bg-black/20 border-white/10 mb-6">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Brain className="h-5 w-5" />
-                AI Model Selection
+                AI Analysis Model
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -85,10 +125,18 @@ const ColorAnalysisDashboard = () => {
 
           <Card className="bg-black/20 border-white/10">
             <CardHeader>
-              <CardTitle>Upload Video for Color Analysis</CardTitle>
+              <CardTitle className="flex items-center gap-2">
+                <Sparkles className="h-5 w-5" />
+                Upload Video for Color Analysis
+              </CardTitle>
             </CardHeader>
             <CardContent>
               <VideoUpload onUpload={handleVideoUpload} isUploading={isAnalyzing} />
+              {!selectedGenre && (
+                <p className="text-sm text-yellow-400 mt-2">
+                  💡 Select a genre above to get personalized color recommendations before uploading!
+                </p>
+              )}
             </CardContent>
           </Card>
         </>
