@@ -1,6 +1,7 @@
 
 import React from 'react';
 import { ColorData } from '@/types/colorAnalysis';
+import { generateColorInsights } from '@/utils/colorInsights';
 import {
   ChartContainer,
   ChartLegend,
@@ -50,6 +51,9 @@ const ColorAnalysisResults: React.FC<ColorAnalysisResultsProps> = ({ data }) => 
       style={{ backgroundColor: colorMap[color] || color }}
     />
   );
+
+  // Generate dynamic insights based on actual color data
+  const insights = generateColorInsights(data);
 
   return (
     <Tabs defaultValue="distribution" className="w-full">
@@ -188,44 +192,44 @@ const ColorAnalysisResults: React.FC<ColorAnalysisResultsProps> = ({ data }) => 
             </h3>
             
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              {/* Recommendations */}
+              {/* Dynamic Recommendations */}
               <div className="space-y-4">
                 <h4 className="font-medium text-green-400 mb-3">✅ What's Working Well</h4>
-                <ul className="space-y-2 text-sm">
-                  {data.dominant.percentage > 40 && (
-                    <li>• Strong color focus with {data.dominant.color.toLowerCase()} dominance creates visual consistency</li>
-                  )}
-                  {data.distribution.length <= 4 && (
-                    <li>• Clean, minimal color palette is easy on the eyes</li>
-                  )}
-                  {data.mood.includes("energetic") && (
-                    <li>• Current mood conveys energy and engagement</li>
-                  )}
-                  {data.mood.includes("calm") && (
-                    <li>• Calming color scheme promotes viewer retention</li>
-                  )}
-                  <li>• Color distribution shows {data.distribution.length > 5 ? "dynamic variety" : "focused consistency"}</li>
-                </ul>
+                {insights.workingWell.length > 0 ? (
+                  <ul className="space-y-2 text-sm">
+                    {insights.workingWell.map((insight, index) => (
+                      <li key={index} className="flex items-start gap-2">
+                        <div className="w-2 h-2 rounded-full bg-green-400 mt-2 flex-shrink-0" />
+                        <span>{insight.message}</span>
+                        <span className="text-xs text-green-300 ml-auto">
+                          {insight.confidence}% confidence
+                        </span>
+                      </li>
+                    ))}
+                  </ul>
+                ) : (
+                  <p className="text-sm text-gray-400">Analyzing your color data...</p>
+                )}
               </div>
 
-              {/* Improvements */}
+              {/* Dynamic Improvements */}
               <div className="space-y-4">
                 <h4 className="font-medium text-orange-400 mb-3">🔄 What You Can Improve</h4>
-                <ul className="space-y-2 text-sm">
-                  {data.dominant.percentage > 60 && (
-                    <li>• Add accent colors to break monotony ({data.dominant.color.toLowerCase()} takes up {data.dominant.percentage.toFixed(0)}%)</li>
-                  )}
-                  {data.distribution.length > 6 && (
-                    <li>• Simplify color palette - too many colors can be distracting</li>
-                  )}
-                  {!data.distribution.some(c => c.color === "Blue") && data.mood.includes("corporate") && (
-                    <li>• Consider adding blue tones for trust and professionalism</li>
-                  )}
-                  {!data.distribution.some(c => c.color === "Green") && (
-                    <li>• Add green accents to convey freshness and positivity</li>
-                  )}
-                  <li>• Experiment with complementary colors to create visual interest</li>
-                </ul>
+                {insights.improvements.length > 0 ? (
+                  <ul className="space-y-2 text-sm">
+                    {insights.improvements.map((insight, index) => (
+                      <li key={index} className="flex items-start gap-2">
+                        <div className="w-2 h-2 rounded-full bg-orange-400 mt-2 flex-shrink-0" />
+                        <span>{insight.message}</span>
+                        <span className="text-xs text-orange-300 ml-auto">
+                          {insight.confidence}% confidence
+                        </span>
+                      </li>
+                    ))}
+                  </ul>
+                ) : (
+                  <p className="text-sm text-gray-400">Your color palette looks well-balanced!</p>
+                )}
               </div>
             </div>
           </div>
@@ -240,30 +244,36 @@ const ColorAnalysisResults: React.FC<ColorAnalysisResultsProps> = ({ data }) => 
               <div className="space-y-3">
                 <h4 className="font-medium text-yellow-400">Color Grading</h4>
                 <ul className="space-y-1 text-sm">
-                  <li>• Increase saturation by 10-15%</li>
-                  <li>• Adjust white balance for warmer feel</li>
-                  <li>• Add subtle color gradients</li>
-                  <li>• Enhance shadow/highlight contrast</li>
+                  {insights.specificActions.colorGrading.map((action, index) => (
+                    <li key={index}>• {action}</li>
+                  ))}
+                  {insights.specificActions.colorGrading.length === 0 && (
+                    <li className="text-gray-400">• Current grading looks good</li>
+                  )}
                 </ul>
               </div>
               
               <div className="space-y-3">
                 <h4 className="font-medium text-blue-400">Visual Elements</h4>
                 <ul className="space-y-1 text-sm">
-                  <li>• Add colored text overlays</li>
-                  <li>• Use colored borders/frames</li>
-                  <li>• Include branded color accents</li>
-                  <li>• Add colored graphics/icons</li>
+                  {insights.specificActions.visualElements.map((action, index) => (
+                    <li key={index}>• {action}</li>
+                  ))}
+                  {insights.specificActions.visualElements.length === 0 && (
+                    <li className="text-gray-400">• Visual elements well-balanced</li>
+                  )}
                 </ul>
               </div>
               
               <div className="space-y-3">
                 <h4 className="font-medium text-purple-400">Lighting Changes</h4>
                 <ul className="space-y-1 text-sm">
-                  <li>• Use colored LED lights</li>
-                  <li>• Add ambient background lighting</li>
-                  <li>• Try golden hour filters</li>
-                  <li>• Experiment with ring light colors</li>
+                  {insights.specificActions.lightingChanges.map((action, index) => (
+                    <li key={index}>• {action}</li>
+                  ))}
+                  {insights.specificActions.lightingChanges.length === 0 && (
+                    <li className="text-gray-400">• Lighting setup optimal</li>
+                  )}
                 </ul>
               </div>
             </div>
@@ -276,27 +286,38 @@ const ColorAnalysisResults: React.FC<ColorAnalysisResultsProps> = ({ data }) => 
             </h3>
             
             <div className="space-y-4">
-              <div>
-                <h4 className="font-medium mb-2">Viewer Engagement Prediction</h4>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <p className="text-sm mb-2">Based on your color analysis:</p>
-                    <ul className="space-y-1 text-sm">
-                      <li>• Watch time: {data.mood.includes("energetic") ? "Above average" : "Standard"}</li>
-                      <li>• Click-through rate: {data.distribution.length <= 4 ? "Higher potential" : "Moderate"}</li>
-                      <li>• Emotional response: {data.mood}</li>
-                      <li>• Brand recall: {data.dominant.percentage > 50 ? "Strong" : "Moderate"}</li>
-                    </ul>
+              <div className="flex items-center justify-between mb-4">
+                <h4 className="font-medium mb-2">AI-Powered Performance Prediction</h4>
+                <div className="flex items-center gap-2">
+                  <span className="text-sm">Overall Score:</span>
+                  <div className={`px-3 py-1 rounded-full text-sm font-medium ${
+                    insights.performanceMetrics.overallScore >= 80 ? 'bg-green-500/20 text-green-300' :
+                    insights.performanceMetrics.overallScore >= 60 ? 'bg-yellow-500/20 text-yellow-300' :
+                    'bg-red-500/20 text-red-300'
+                  }`}>
+                    {insights.performanceMetrics.overallScore}/100
                   </div>
-                  <div>
-                    <p className="text-sm mb-2">Recommended changes for better performance:</p>
-                    <ul className="space-y-1 text-sm">
-                      <li>• Add contrasting colors for 15% longer watch time</li>
-                      <li>• Use warm colors for 20% more engagement</li>
-                      <li>• Include brand colors for 25% better recall</li>
-                      <li>• Balance color distribution for optimal viewing</li>
-                    </ul>
-                  </div>
+                </div>
+              </div>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <p className="text-sm mb-2 font-medium">Predicted Metrics:</p>
+                  <ul className="space-y-1 text-sm">
+                    <li>• Watch time: {insights.performanceMetrics.watchTime}</li>
+                    <li>• Click-through rate: {insights.performanceMetrics.clickThrough}</li>
+                    <li>• Emotional response: {insights.performanceMetrics.emotionalResponse}</li>
+                    <li>• Brand recall: {insights.performanceMetrics.brandRecall}</li>
+                  </ul>
+                </div>
+                <div>
+                  <p className="text-sm mb-2 font-medium">Based on color psychology analysis of:</p>
+                  <ul className="space-y-1 text-sm">
+                    <li>• {data.distribution.length} distinct colors analyzed</li>
+                    <li>• {data.dominant.color} dominance at {data.dominant.percentage.toFixed(1)}%</li>
+                    <li>• Color harmony and engagement scores</li>
+                    <li>• Psychological impact assessment</li>
+                  </ul>
                 </div>
               </div>
             </div>
