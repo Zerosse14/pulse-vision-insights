@@ -9,8 +9,9 @@ import { analyzeVideoColors, colorAnalysisModels } from "@/utils/colorAnalysis";
 import { ColorData } from "@/types/colorAnalysis";
 import ColorAnalysisResults from "@/components/ColorAnalysisResults";
 import GenreRecommendations from "@/components/GenreRecommendations";
-import { videoGenres, getGenreRecommendation } from "@/utils/genreRecommendations";
+import { videoGenres, getGenreRecommendation, GenreRecommendation } from "@/utils/genreRecommendations";
 import { Brain, Video, Sparkles } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
 
 const ColorAnalysisDashboard = () => {
   const [isAnalyzing, setIsAnalyzing] = useState(false);
@@ -18,6 +19,38 @@ const ColorAnalysisDashboard = () => {
   const [showResults, setShowResults] = useState(false);
   const [selectedModel, setSelectedModel] = useState("basic");
   const [selectedGenre, setSelectedGenre] = useState<string>("");
+  const [genreRecommendation, setGenreRecommendation] = useState<GenreRecommendation | null>(null);
+  const [isLoadingRecommendations, setIsLoadingRecommendations] = useState(false);
+
+  const handleGenreChange = async (value: string) => {
+    setSelectedGenre(value);
+    setIsLoadingRecommendations(true);
+    
+    try {
+      const { data, error } = await supabase.functions.invoke('generate-genre-recommendations', {
+        body: { genre: value }
+      });
+
+      if (error) throw error;
+      
+      setGenreRecommendation(data);
+      toast({
+        title: "Recommendations Generated",
+        description: `AI-powered recommendations for ${value} videos loaded successfully.`,
+      });
+    } catch (error) {
+      console.error('Error fetching recommendations:', error);
+      toast({
+        title: "Error",
+        description: "Failed to generate recommendations. Using default data.",
+        variant: "destructive",
+      });
+      // Fallback to static recommendations
+      setGenreRecommendation(getGenreRecommendation(value));
+    } finally {
+      setIsLoadingRecommendations(false);
+    }
+  };
 
   const handleVideoUpload = async (file: File) => {
     try {
@@ -69,7 +102,7 @@ const ColorAnalysisDashboard = () => {
             </CardHeader>
             <CardContent>
               <div className="flex gap-4 items-center">
-                <Select value={selectedGenre} onValueChange={setSelectedGenre}>
+                <Select value={selectedGenre} onValueChange={handleGenreChange}>
                   <SelectTrigger className="w-64">
                     <SelectValue placeholder="Select Video Genre" />
                   </SelectTrigger>
@@ -80,7 +113,7 @@ const ColorAnalysisDashboard = () => {
                   </SelectContent>
                 </Select>
                 <span className="text-sm text-gray-400">
-                  {selectedGenre ? `Selected: ${videoGenres[selectedGenre as keyof typeof videoGenres]}` : "Choose a genre for personalized recommendations"}
+                  {selectedGenre ? `Selected: ${videoGenres[selectedGenre as keyof typeof videoGenres]}` : "Choose a genre for personalized AI recommendations"}
                 </span>
               </div>
             </CardContent>
@@ -90,8 +123,9 @@ const ColorAnalysisDashboard = () => {
           {selectedGenre && (
             <div className="mb-6">
               <GenreRecommendations 
-                recommendation={getGenreRecommendation(selectedGenre)} 
+                recommendation={genreRecommendation} 
                 selectedGenre={videoGenres[selectedGenre as keyof typeof videoGenres]}
+                isLoading={isLoadingRecommendations}
               />
             </div>
           )}
