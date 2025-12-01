@@ -19,8 +19,6 @@ import ColorAnalysisDashboard from "./pages/dashboard/ColorAnalysisDashboard";
 import TranscriptAnalysisDashboard from "./pages/dashboard/TranscriptAnalysisDashboard";
 import TrendAnalysisDashboard from "./pages/dashboard/TrendAnalysisDashboard";
 import SettingsDashboard from "./pages/dashboard/SettingsDashboard";
-import TwitterDashboard from "./pages/dashboard/TwitterDashboard";
-import InstagramDashboard from "./pages/dashboard/InstagramDashboard";
 
 // Create QueryClient outside of the component
 const queryClient = new QueryClient();
@@ -49,10 +47,6 @@ function App() {
                 <Route path="transcript" element={<TranscriptAnalysisDashboard />} />
                 <Route path="trends" element={<TrendAnalysisDashboard />} />
                 <Route path="settings" element={<SettingsDashboard />} />
-                <Route path="platform/twitter" element={<TwitterDashboard />} />
-                <Route path="platform/instagram" element={<InstagramDashboard />} />
-                <Route path="platform/youtube" element={<div>YouTube Dashboard Coming Soon</div>} />
-                <Route path="platform/facebook" element={<div>Facebook Dashboard Coming Soon</div>} />
                 <Route path="*" element={<NotFound />} />
               </Route>
               
