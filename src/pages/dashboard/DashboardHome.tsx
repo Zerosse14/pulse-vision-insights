@@ -1,6 +1,5 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { FileVideo, Palette, TrendingUp, Users } from "lucide-react";
-import { Youtube, Instagram, Twitter, Facebook } from "lucide-react";
+import { FileVideo, Palette, TrendingUp, FileText } from "lucide-react";
 
 const DashboardHome = () => {
   return (
@@ -43,12 +42,12 @@ const DashboardHome = () => {
         
         <Card className="bg-black/20 border-white/10">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Active Users</CardTitle>
-            <Users className="h-4 w-4 text-primary" />
+            <CardTitle className="text-sm font-medium">Transcripts</CardTitle>
+            <FileText className="h-4 w-4 text-primary" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">348</div>
-            <p className="text-xs text-gray-400">+26% from last month</p>
+            <div className="text-2xl font-bold">67</div>
+            <p className="text-xs text-gray-400">Transcripts analyzed</p>
           </CardContent>
         </Card>
       </div>
@@ -94,60 +93,47 @@ const DashboardHome = () => {
         
         <Card className="bg-black/20 border-white/10">
           <CardHeader>
-            <CardTitle>Platform Distribution</CardTitle>
-            <CardDescription>Videos analyzed by platform</CardDescription>
+            <CardTitle>Analysis Breakdown</CardTitle>
+            <CardDescription>Usage by analysis type</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <Youtube className="h-4 w-4 text-red-500" />
-                  <span>YouTube</span>
+                  <Palette className="h-4 w-4 text-primary" />
+                  <span>Color Analysis</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <div className="w-40 h-2 rounded-full bg-gray-700">
-                    <div className="h-2 rounded-full bg-red-500 w-[65%]"></div>
+                  <div className="w-40 h-2 rounded-full bg-muted">
+                    <div className="h-2 rounded-full bg-primary w-[55%]"></div>
                   </div>
-                  <span className="text-sm">65%</span>
+                  <span className="text-sm">55%</span>
                 </div>
               </div>
               
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <Instagram className="h-4 w-4 text-pink-500" />
-                  <span>Instagram</span>
+                  <FileText className="h-4 w-4 text-secondary" />
+                  <span>Transcript Analysis</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <div className="w-40 h-2 rounded-full bg-gray-700">
-                    <div className="h-2 rounded-full bg-pink-500 w-[20%]"></div>
+                  <div className="w-40 h-2 rounded-full bg-muted">
+                    <div className="h-2 rounded-full bg-secondary w-[30%]"></div>
                   </div>
-                  <span className="text-sm">20%</span>
+                  <span className="text-sm">30%</span>
                 </div>
               </div>
               
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <Twitter className="h-4 w-4 text-blue-400" />
-                  <span>Twitter</span>
+                  <TrendingUp className="h-4 w-4 text-accent" />
+                  <span>Trend Analysis</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <div className="w-40 h-2 rounded-full bg-gray-700">
-                    <div className="h-2 rounded-full bg-blue-400 w-[10%]"></div>
+                  <div className="w-40 h-2 rounded-full bg-muted">
+                    <div className="h-2 rounded-full bg-accent w-[15%]"></div>
                   </div>
-                  <span className="text-sm">10%</span>
-                </div>
-              </div>
-              
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <Facebook className="h-4 w-4 text-blue-600" />
-                  <span>Facebook</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <div className="w-40 h-2 rounded-full bg-gray-700">
-                    <div className="h-2 rounded-full bg-blue-600 w-[5%]"></div>
-                  </div>
-                  <span className="text-sm">5%</span>
+                  <span className="text-sm">15%</span>
                 </div>
               </div>
             </div>

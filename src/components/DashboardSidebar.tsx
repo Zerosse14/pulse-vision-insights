@@ -5,11 +5,7 @@ import {
   FileText, 
   TrendingUp, 
   Settings, 
-  Home,
-  Twitter,
-  Instagram,
-  Youtube,
-  Facebook
+  Home
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -23,13 +19,6 @@ const analysisItems: SidebarItem[] = [
   { icon: Palette, label: "Color Analysis", href: "/dashboard/color" },
   { icon: FileText, label: "Transcript Analysis", href: "/dashboard/transcript" },
   { icon: TrendingUp, label: "Trend Analysis", href: "/dashboard/trends" }
-];
-
-const platformItems: SidebarItem[] = [
-  { icon: Twitter, label: "Twitter", href: "/dashboard/platform/twitter" },
-  { icon: Instagram, label: "Instagram", href: "/dashboard/platform/instagram" },
-  { icon: Youtube, label: "YouTube", href: "/dashboard/platform/youtube" },
-  { icon: Facebook, label: "Facebook", href: "/dashboard/platform/facebook" }
 ];
 
 const SidebarNavItem = ({ item, isActive }: { item: SidebarItem; isActive: boolean }) => (
@@ -60,22 +49,9 @@ const DashboardSidebar = () => {
       
       <div className="space-y-8">
         <div>
-          <h3 className="mb-2 text-lg font-medium text-white">Analysis Types</h3>
+          <h3 className="mb-2 text-lg font-medium text-white">Analysis Tools</h3>
           <nav className="space-y-1">
             {analysisItems.map((item) => (
-              <SidebarNavItem 
-                key={item.href} 
-                item={item} 
-                isActive={currentPath === item.href} 
-              />
-            ))}
-          </nav>
-        </div>
-
-        <div>
-          <h3 className="mb-2 text-lg font-medium text-white">Platforms</h3>
-          <nav className="space-y-1">
-            {platformItems.map((item) => (
               <SidebarNavItem 
                 key={item.href} 
                 item={item} 
