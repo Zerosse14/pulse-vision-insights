@@ -6,14 +6,34 @@ import { GenreRecommendation } from "@/utils/genreRecommendations";
 import { Palette, TrendingUp, Hash, Lightbulb, Target, Heart } from "lucide-react";
 
 interface GenreRecommendationsProps {
-  recommendation: GenreRecommendation;
+  recommendation: GenreRecommendation | null;
   selectedGenre: string;
+  isLoading?: boolean;
 }
 
 const GenreRecommendations: React.FC<GenreRecommendationsProps> = ({ 
   recommendation, 
-  selectedGenre 
+  selectedGenre,
+  isLoading = false
 }) => {
+  if (isLoading || !recommendation) {
+    return (
+      <Card className="bg-black/20 border-white/10">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Lightbulb className="h-5 w-5 animate-pulse text-primary" />
+            Generating AI Recommendations for {selectedGenre}...
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="flex items-center justify-center py-8">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
   return (
     <Card className="bg-black/20 border-white/10">
       <CardHeader>
