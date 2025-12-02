@@ -2,163 +2,216 @@ import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { Badge } from "@/components/ui/badge";
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar } from 'recharts';
-import { TrendingUp, TrendingDown, Brain, Zap, Star } from "lucide-react";
+import { TrendingUp, TrendingDown, Loader2 } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 
-// Mock data for trends
-const trendData = [
-  { date: "2024-01", engagement: 65, reach: 1200, sentiment: 0.7 },
-  { date: "2024-02", engagement: 72, reach: 1450, sentiment: 0.8 },
-  { date: "2024-03", engagement: 68, reach: 1320, sentiment: 0.6 },
-  { date: "2024-04", engagement: 85, reach: 1680, sentiment: 0.9 },
-  { date: "2024-05", engagement: 92, reach: 1890, sentiment: 0.85 },
-  { date: "2024-06", engagement: 88, reach: 1750, sentiment: 0.78 }
-];
+interface TrendData {
+  date: string;
+  engagement: number;
+  reach: number;
+}
 
-const topicTrends = [
-  { topic: "AI Technology", score: 95, change: "+12%" },
-  { topic: "Sustainable Living", score: 87, change: "+8%" },
-  { topic: "Remote Work", score: 82, change: "-3%" },
-  { topic: "Digital Marketing", score: 79, change: "+15%" },
-  { topic: "Health & Wellness", score: 76, change: "+5%" }
-];
+interface TrendingTopic {
+  topic: string;
+  score: number;
+  change: "up" | "down";
+}
 
-const mlModels = [
-  { name: "BERT Sentiment", type: "sentiment", accuracy: "94%" },
-  { name: "GPT-4 Trends", type: "prediction", accuracy: "89%" },
-  { name: "CNN Topic Classifier", type: "classification", accuracy: "91%" }
-];
+interface AnalysisResults {
+  engagementTrends: TrendData[];
+  trendingTopics: TrendingTopic[];
+  insights: {
+    summary: string;
+    recommendations: string[];
+  };
+}
 
 const TrendAnalysisDashboard = () => {
-  const [selectedModel, setSelectedModel] = useState("bert");
+  const [selectedGenre, setSelectedGenre] = useState("technology");
   const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [results, setResults] = useState<AnalysisResults | null>(null);
+  const { toast } = useToast();
 
-  const handleAnalyze = () => {
+  const handleAnalyze = async () => {
     setIsAnalyzing(true);
-    setTimeout(() => setIsAnalyzing(false), 3000);
+    try {
+      const { data, error } = await supabase.functions.invoke('analyze-trends', {
+        body: { genre: selectedGenre, timeframe: "past 7 days" }
+      });
+
+      if (error) throw error;
+
+      setResults(data);
+      toast({
+        title: "Analysis Complete",
+        description: "Trend analysis has been generated successfully",
+      });
+    } catch (error: any) {
+      console.error("Trend analysis error:", error);
+      toast({
+        title: "Analysis Failed",
+        description: error.message || "Failed to analyze trends",
+        variant: "destructive",
+      });
+    } finally {
+      setIsAnalyzing(false);
+    }
   };
 
   return (
-    <div>
-      <h1 className="text-3xl font-bold mb-6">
-        <span className="gradient-text">Trend Analysis Dashboard</span>
-      </h1>
+    <div className="space-y-6">
+      <div>
+        <h1 className="text-3xl font-bold mb-2">
+          <span className="gradient-text">Trend Analysis Dashboard</span>
+        </h1>
+        <p className="text-muted-foreground">
+          AI-powered trend analysis for your content genre
+        </p>
+      </div>
 
-      {/* ML Model Selection */}
-      <Card className="bg-black/20 border-white/10 mb-6">
+      <Card className="bg-black/20 border-white/10">
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Brain className="h-5 w-5" />
-            Machine Learning Models
-          </CardTitle>
+          <CardTitle>Configure Analysis</CardTitle>
         </CardHeader>
-        <CardContent>
-          <div className="flex gap-4 items-center mb-4">
-            <Select value={selectedModel} onValueChange={setSelectedModel}>
-              <SelectTrigger className="w-64">
-                <SelectValue placeholder="Select ML Model" />
+        <CardContent className="space-y-4">
+          <div className="space-y-2">
+            <label className="text-sm font-medium">Select Genre</label>
+            <Select value={selectedGenre} onValueChange={setSelectedGenre}>
+              <SelectTrigger className="bg-black/30 border-white/20">
+                <SelectValue placeholder="Select genre" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="bert">BERT Sentiment Analysis</SelectItem>
-                <SelectItem value="gpt4">GPT-4 Trend Prediction</SelectItem>
-                <SelectItem value="cnn">CNN Topic Classification</SelectItem>
+                <SelectItem value="technology">Technology</SelectItem>
+                <SelectItem value="gaming">Gaming</SelectItem>
+                <SelectItem value="educational">Educational</SelectItem>
+                <SelectItem value="entertainment">Entertainment</SelectItem>
+                <SelectItem value="lifestyle">Lifestyle</SelectItem>
+                <SelectItem value="business">Business</SelectItem>
               </SelectContent>
             </Select>
-            <Button onClick={handleAnalyze} disabled={isAnalyzing}>
-              {isAnalyzing ? "Analyzing..." : "Run Analysis"}
-            </Button>
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {mlModels.map((model, index) => (
-              <div key={index} className="p-4 bg-black/30 rounded-lg border border-white/5">
-                <div className="flex items-center gap-2 mb-2">
-                  <Zap className="h-4 w-4 text-yellow-500" />
-                  <h4 className="font-medium">{model.name}</h4>
-                </div>
-                <p className="text-sm text-gray-400 mb-2">{model.type}</p>
-                <Badge variant="secondary">{model.accuracy} accuracy</Badge>
-              </div>
-            ))}
-          </div>
+          <Button 
+            onClick={handleAnalyze} 
+            disabled={isAnalyzing}
+            className="w-full"
+          >
+            {isAnalyzing ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Analyzing Trends...
+              </>
+            ) : (
+              "Run Trend Analysis"
+            )}
+          </Button>
+
+          {results?.insights && (
+            <div className="pt-4 space-y-2">
+              <p className="text-sm font-medium">AI Insights</p>
+              <p className="text-sm text-muted-foreground">{results.insights.summary}</p>
+            </div>
+          )}
         </CardContent>
       </Card>
 
-      {/* Trending Topics */}
-      <Card className="bg-black/20 border-white/10 mb-6">
-        <CardHeader>
-          <CardTitle>Trending Topics</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-4">
-            {topicTrends.map((topic, index) => (
-              <div key={index} className="flex items-center justify-between p-3 bg-black/30 rounded-lg">
-                <div className="flex items-center gap-3">
-                  <Star className="h-4 w-4 text-yellow-500" />
-                  <span className="font-medium">{topic.topic}</span>
-                </div>
-                <div className="flex items-center gap-3">
-                  <span className="text-2xl font-bold">{topic.score}</span>
-                  <Badge variant={topic.change.startsWith('+') ? 'default' : 'destructive'}>
-                    {topic.change.startsWith('+') ? <TrendingUp className="h-3 w-3 mr-1" /> : <TrendingDown className="h-3 w-3 mr-1" />}
-                    {topic.change}
-                  </Badge>
-                </div>
+      {results && (
+        <>
+          <Card className="bg-black/20 border-white/10">
+            <CardHeader>
+              <CardTitle>Trending Topics</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-3">
+                {results.trendingTopics.map((topic, index) => (
+                  <div key={index} className="flex items-center justify-between p-4 rounded-lg bg-black/30 border border-white/10">
+                    <span className="font-medium">{topic.topic}</span>
+                    <div className="flex items-center gap-3">
+                      <span className="text-xl font-bold">{topic.score}</span>
+                      <Badge variant={topic.change === "up" ? "default" : "destructive"}>
+                        {topic.change === "up" ? (
+                          <TrendingUp className="h-3 w-3 mr-1" />
+                        ) : (
+                          <TrendingDown className="h-3 w-3 mr-1" />
+                        )}
+                        {topic.change}
+                      </Badge>
+                    </div>
+                  </div>
+                ))}
               </div>
-            ))}
+            </CardContent>
+          </Card>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <Card className="bg-black/20 border-white/10">
+              <CardHeader>
+                <CardTitle>Engagement Trends</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <ResponsiveContainer width="100%" height={300}>
+                  <LineChart data={results.engagementTrends}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
+                    <XAxis dataKey="date" stroke="rgba(255,255,255,0.6)" />
+                    <YAxis stroke="rgba(255,255,255,0.6)" />
+                    <Tooltip 
+                      contentStyle={{ 
+                        backgroundColor: 'rgba(0, 0, 0, 0.8)', 
+                        border: '1px solid rgba(255, 255, 255, 0.1)' 
+                      }} 
+                    />
+                    <Line type="monotone" dataKey="engagement" stroke="hsl(var(--primary))" strokeWidth={2} />
+                    <Line type="monotone" dataKey="reach" stroke="hsl(var(--secondary))" strokeWidth={2} />
+                  </LineChart>
+                </ResponsiveContainer>
+              </CardContent>
+            </Card>
+
+            <Card className="bg-black/20 border-white/10">
+              <CardHeader>
+                <CardTitle>Topic Performance</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <ResponsiveContainer width="100%" height={300}>
+                  <BarChart data={results.trendingTopics}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
+                    <XAxis dataKey="topic" stroke="rgba(255,255,255,0.6)" />
+                    <YAxis />
+                    <Tooltip 
+                      contentStyle={{ 
+                        backgroundColor: 'rgba(0, 0, 0, 0.8)', 
+                        border: '1px solid rgba(255, 255, 255, 0.1)' 
+                      }} 
+                    />
+                    <Bar dataKey="score" fill="hsl(var(--primary))" />
+                  </BarChart>
+                </ResponsiveContainer>
+              </CardContent>
+            </Card>
           </div>
-        </CardContent>
-      </Card>
 
-      {/* Charts */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <Card className="bg-black/20 border-white/10">
-          <CardHeader>
-            <CardTitle>Engagement Trends</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <ResponsiveContainer width="100%" height={300}>
-              <LineChart data={trendData}>
-                <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
-                <XAxis dataKey="date" stroke="rgba(255,255,255,0.6)" />
-                <YAxis stroke="rgba(255,255,255,0.6)" />
-                <Tooltip 
-                  contentStyle={{ 
-                    backgroundColor: 'rgba(0,0,0,0.8)', 
-                    border: '1px solid rgba(255,255,255,0.2)',
-                    borderRadius: '8px'
-                  }} 
-                />
-                <Line type="monotone" dataKey="engagement" stroke="#8884d8" strokeWidth={2} />
-              </LineChart>
-            </ResponsiveContainer>
-          </CardContent>
-        </Card>
-
-        <Card className="bg-black/20 border-white/10">
-          <CardHeader>
-            <CardTitle>Topic Performance</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <ResponsiveContainer width="100%" height={300}>
-              <BarChart data={topicTrends.slice(0, 4)}>
-                <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
-                <XAxis dataKey="topic" stroke="rgba(255,255,255,0.6)" />
-                <YAxis stroke="rgba(255,255,255,0.6)" />
-                <Tooltip 
-                  contentStyle={{ 
-                    backgroundColor: 'rgba(0,0,0,0.8)', 
-                    border: '1px solid rgba(255,255,255,0.2)',
-                    borderRadius: '8px'
-                  }} 
-                />
-                <Bar dataKey="score" fill="#8884d8" />
-              </BarChart>
-            </ResponsiveContainer>
-          </CardContent>
-        </Card>
-      </div>
+          {results.insights.recommendations.length > 0 && (
+            <Card className="bg-black/20 border-white/10">
+              <CardHeader>
+                <CardTitle>AI Recommendations</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <ul className="space-y-2">
+                  {results.insights.recommendations.map((rec, index) => (
+                    <li key={index} className="flex items-start gap-2">
+                      <span className="text-primary">•</span>
+                      <span className="text-sm">{rec}</span>
+                    </li>
+                  ))}
+                </ul>
+              </CardContent>
+            </Card>
+          )}
+        </>
+      )}
     </div>
   );
 };

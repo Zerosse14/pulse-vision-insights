@@ -1,12 +1,6 @@
 
 import { Link, useLocation } from "react-router-dom";
-import { 
-  Palette, 
-  FileText, 
-  TrendingUp, 
-  Settings, 
-  Home
-} from "lucide-react";
+import { Home, Palette, FileText, TrendingUp, Settings, Brain } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 type SidebarItem = {
@@ -18,7 +12,8 @@ type SidebarItem = {
 const analysisItems: SidebarItem[] = [
   { icon: Palette, label: "Color Analysis", href: "/dashboard/color" },
   { icon: FileText, label: "Transcript Analysis", href: "/dashboard/transcript" },
-  { icon: TrendingUp, label: "Trend Analysis", href: "/dashboard/trends" }
+  { icon: TrendingUp, label: "Trend Analysis", href: "/dashboard/trends" },
+  { icon: Brain, label: "KNN Analysis", href: "/dashboard/knn" },
 ];
 
 const SidebarNavItem = ({ item, isActive }: { item: SidebarItem; isActive: boolean }) => (

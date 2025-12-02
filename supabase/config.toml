@@ -1,1 +1,10 @@
 project_id = "quvgsssplsvixyshbqbr"
+
+[functions.generate-genre-recommendations]
+verify_jwt = false
+
+[functions.analyze-trends]
+verify_jwt = false
+
+[functions.knn-analysis]
+verify_jwt = false
