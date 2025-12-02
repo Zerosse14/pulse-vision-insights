@@ -18,6 +18,7 @@ import DashboardHome from "./pages/dashboard/DashboardHome";
 import ColorAnalysisDashboard from "./pages/dashboard/ColorAnalysisDashboard";
 import TranscriptAnalysisDashboard from "./pages/dashboard/TranscriptAnalysisDashboard";
 import TrendAnalysisDashboard from "./pages/dashboard/TrendAnalysisDashboard";
+import KnnAnalysisDashboard from "./pages/dashboard/KnnAnalysisDashboard";
 import SettingsDashboard from "./pages/dashboard/SettingsDashboard";
 
 // Create QueryClient outside of the component
@@ -46,6 +47,7 @@ function App() {
                 <Route path="color" element={<ColorAnalysisDashboard />} />
                 <Route path="transcript" element={<TranscriptAnalysisDashboard />} />
                 <Route path="trends" element={<TrendAnalysisDashboard />} />
+                <Route path="knn" element={<KnnAnalysisDashboard />} />
                 <Route path="settings" element={<SettingsDashboard />} />
                 <Route path="*" element={<NotFound />} />
               </Route>
