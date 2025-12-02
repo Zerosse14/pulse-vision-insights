@@ -42,16 +42,35 @@ interface KnnResult {
 const KnnAnalysisDashboard = () => {
   const [k, setK] = useState("5");
   const [analysisType, setAnalysisType] = useState("content-similarity");
-  const [videoUrl, setVideoUrl] = useState("");
+  const [uploadedFile, setUploadedFile] = useState<File | null>(null);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [results, setResults] = useState<KnnResult | null>(null);
   const { toast } = useToast();
 
+  const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      if (file.type.startsWith('video/')) {
+        setUploadedFile(file);
+        toast({
+          title: "Video Uploaded",
+          description: `${file.name} ready for analysis`,
+        });
+      } else {
+        toast({
+          title: "Invalid File Type",
+          description: "Please upload a video file",
+          variant: "destructive",
+        });
+      }
+    }
+  };
+
   const handleAnalyze = async () => {
-    if (!videoUrl) {
+    if (!uploadedFile) {
       toast({
         title: "Input Required",
-        description: "Please provide a video URL or upload a video",
+        description: "Please upload a video file",
         variant: "destructive",
       });
       return;
@@ -118,14 +137,21 @@ const KnnAnalysisDashboard = () => {
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="videoUrl">Video URL or Upload</Label>
-            <Input
-              id="videoUrl"
-              placeholder="Enter video URL..."
-              value={videoUrl}
-              onChange={(e) => setVideoUrl(e.target.value)}
-              className="bg-black/30 border-white/20"
-            />
+            <Label htmlFor="video-upload">Upload Video</Label>
+            <div className="flex items-center gap-4">
+              <Input
+                id="video-upload"
+                type="file"
+                accept="video/*"
+                onChange={handleFileUpload}
+                className="bg-black/30 border-white/20"
+              />
+              {uploadedFile && (
+                <span className="text-sm text-muted-foreground">
+                  {uploadedFile.name}
+                </span>
+              )}
+            </div>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
